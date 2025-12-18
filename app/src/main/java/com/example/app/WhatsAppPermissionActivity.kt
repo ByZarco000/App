@@ -1,11 +1,13 @@
 package com.example.app
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
+import androidx.core.content.edit
 
+@Suppress("DEPRECATION")
 class WhatsAppPermissionActivity : AppCompatActivity() {
 
     companion object {
@@ -24,7 +26,7 @@ class WhatsAppPermissionActivity : AppCompatActivity() {
                 "Para recuperar fotos y videos de WhatsApp:\n\n" +
                         "1️⃣ Pulsa CONTINUAR\n" +
                         "2️⃣ Pulsa \"Usar esta carpeta\"\n\n" +
-                        "⚠️ NO cambies la carpeta\n" +
+                        "⚠️ NO cambies de carpeta\n" +
                         "Solo acepta el permiso."
             )
             .setCancelable(false)
@@ -45,12 +47,13 @@ class WhatsAppPermissionActivity : AppCompatActivity() {
             )
             putExtra(
                 "android.provider.extra.INITIAL_URI",
-                Uri.parse("content://com.android.externalstorage.documents/tree/primary:Android/media")
+                "content://com.android.externalstorage.documents/tree/primary:Android/media".toUri()
             )
         }
         startActivityForResult(intent, REQUEST_CODE_WHATSAPP)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -63,9 +66,9 @@ class WhatsAppPermissionActivity : AppCompatActivity() {
             )
 
             getSharedPreferences("permissions", MODE_PRIVATE)
-                .edit()
-                .putString("whatsapp_uri", uri.toString())
-                .apply()
+                .edit {
+                    putString("whatsapp_uri", uri.toString())
+                }
 
             startActivity(Intent(this, WhatsAppScanActivity::class.java))
             finish()
