@@ -12,11 +12,11 @@ import android.view.View
 import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import java.io.OutputStream
 
 class WhatsAppScanActivity : AppCompatActivity() {
 
@@ -30,81 +30,6 @@ class WhatsAppScanActivity : AppCompatActivity() {
     private val selectedUris = mutableListOf<Uri>()
     private lateinit var adapter: GlideImageAdapter
 
-    inner class ScanTask : AsyncTask<Void, Int, List<Uri>>() {
-
-        private val images = mutableListOf<Uri>()
-        private var totalFiles = 0
-        private var processedFiles = 0
-
-        override fun onPreExecute() {
-            super.onPreExecute()
-            progressBar.visibility = View.VISIBLE
-            tvResult.visibility = View.VISIBLE
-            tvResult.text = "Escaneando WhatsApp..."
-            rvImages.visibility = View.GONE
-        }
-
-        override fun doInBackground(vararg params: Void?): List<Uri> {
-            val uriString = getSharedPreferences("permissions", MODE_PRIVATE)
-                .getString("whatsapp_uri", null) ?: return emptyList()
-
-            val root = DocumentFile.fromTreeUri(this@WhatsAppScanActivity, Uri.parse(uriString))
-                ?: return emptyList()
-
-            totalFiles = countFilesRecursive(root)
-            processedFiles = 0
-
-            scanFolderRecursive(root)
-            return images
-        }
-
-        override fun onProgressUpdate(vararg values: Int?) {
-            super.onProgressUpdate(*values)
-            val progress = values[0] ?: 0
-            progressBar.progress = progress
-            tvResult.text = "Escaneando WhatsApp... $progress%"
-        }
-
-        override fun onPostExecute(result: List<Uri>) {
-            super.onPostExecute(result)
-            progressBar.visibility = View.GONE
-
-            if (result.isEmpty()) {
-                tvResult.text = "No se encontraron imágenes"
-                return
-            }
-
-            tvResult.text = "Se encontraron ${result.size} imágenes"
-            rvImages.visibility = View.VISIBLE
-            rvImages.layoutManager = GridLayoutManager(this@WhatsAppScanActivity, 3)
-            adapter = GlideImageAdapter(result) { selectedCount, uris ->
-                selectedUris.clear()
-                selectedUris.addAll(uris)
-                updateButtonsVisibility(selectedCount)
-            }
-            rvImages.adapter = adapter
-        }
-
-        private fun countFilesRecursive(folder: DocumentFile): Int {
-            var count = 0
-            folder.listFiles().forEach { file ->
-                count += if (file.isDirectory) countFilesRecursive(file) else 1
-            }
-            return count
-        }
-
-        private fun scanFolderRecursive(folder: DocumentFile) {
-            folder.listFiles().forEach { file ->
-                if (file.isDirectory) scanFolderRecursive(file)
-                else if (file.type?.startsWith("image/") == true) images.add(file.uri)
-
-                processedFiles++
-                val progress = (processedFiles.toFloat() / totalFiles * 100).toInt()
-                publishProgress(progress)
-            }
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_whatsapp_scan)
@@ -116,12 +41,16 @@ class WhatsAppScanActivity : AppCompatActivity() {
         btnDownload = findViewById(R.id.btnDownload)
         btnShare = findViewById(R.id.btnShare)
 
-        val spacing = 8
-        rvImages.addItemDecoration(GridSpacingItemDecoration(3, spacing, true))
-
-        progressBar.isIndeterminate = false
         progressBar.max = 100
         progressBar.progress = 0
+        progressBar.visibility = View.VISIBLE
+
+        tvResult.text = "Escaneando WhatsApp..."
+        tvResult.visibility = View.VISIBLE
+
+        rvImages.layoutManager = GridLayoutManager(this, 3)
+        rvImages.addItemDecoration(GridSpacingItemDecoration(3, 16))
+        rvImages.visibility = View.GONE
 
         btnDownload.setOnClickListener { downloadSelected() }
         btnShare.setOnClickListener { shareSelected() }
@@ -129,38 +58,125 @@ class WhatsAppScanActivity : AppCompatActivity() {
         ScanTask().execute()
     }
 
-    private fun updateButtonsVisibility(selectedCount: Int) {
-        buttonsLayout.visibility = if (selectedCount > 0) View.VISIBLE else View.GONE
-    }
+    /* ====================== SCAN ====================== */
+    inner class ScanTask : AsyncTask<Void, Int, List<Uri>>() {
 
-    private fun downloadSelected() {
-        if (selectedUris.isEmpty()) return
+        private val images = mutableListOf<Uri>()
+        private var totalFiles = 0
+        private var scanned = 0
 
-        for (uri in selectedUris) {
-            val resolver = contentResolver
-            val name = "WhatsApp_${System.currentTimeMillis()}.jpg"
-            val values = ContentValues().apply {
-                put(MediaStore.MediaColumns.DISPLAY_NAME, name)
-                put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
-                }
+        override fun doInBackground(vararg params: Void?): List<Uri> {
+
+            val uriString = getSharedPreferences("permissions", MODE_PRIVATE)
+                .getString("whatsapp_uri", null) ?: return emptyList()
+
+            val root = DocumentFile.fromTreeUri(this@WhatsAppScanActivity, Uri.parse(uriString))
+                ?: return emptyList()
+
+            totalFiles = countFiles(root)
+            if (totalFiles == 0) return emptyList()
+
+            scanRecursive(root)
+            return images
+        }
+
+        override fun onProgressUpdate(vararg values: Int?) {
+            val progress = values[0] ?: 0
+            progressBar.progress = progress
+            tvResult.text = "Escaneando WhatsApp... $progress%"
+        }
+
+        override fun onPostExecute(result: List<Uri>) {
+            progressBar.visibility = View.GONE
+
+            if (result.isEmpty()) {
+                tvResult.text = "No se encontraron imágenes"
+                return
             }
-            val outUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-            outUri?.let { destUri ->
-                resolver.openOutputStream(destUri)?.use { outputStream ->
-                    resolver.openInputStream(uri)?.use { inputStream ->
-                        inputStream.copyTo(outputStream)
-                    }
+
+            tvResult.text = "Se encontraron ${result.size} imágenes"
+            rvImages.visibility = View.VISIBLE
+
+            adapter = GlideImageAdapter(result) { count, uris ->
+                selectedUris.clear()
+                selectedUris.addAll(uris)
+                buttonsLayout.visibility = if (count > 0) View.VISIBLE else View.GONE
+            }
+
+            rvImages.adapter = adapter
+        }
+
+        private fun countFiles(folder: DocumentFile): Int {
+            var count = 0
+            folder.listFiles().forEach {
+                count += if (it.isDirectory) countFiles(it) else 1
+            }
+            return count
+        }
+
+        private fun scanRecursive(folder: DocumentFile) {
+            folder.listFiles().forEach { file ->
+                if (file.isDirectory) {
+                    scanRecursive(file)
+                } else if (file.type?.startsWith("image/") == true) {
+                    images.add(file.uri)
                 }
+                scanned++
+                publishProgress((scanned * 100f / totalFiles).toInt())
             }
         }
     }
 
+    /* ====================== DOWNLOAD ====================== */
+    private fun downloadSelected() {
+        if (selectedUris.isEmpty()) return
+
+        Thread {
+            val resolver = contentResolver
+
+            selectedUris.forEachIndexed { index, uri ->
+                val name = "IMG_${System.currentTimeMillis()}_$index.jpg"
+
+                val values = ContentValues().apply {
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, name)
+                    put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        put(
+                            MediaStore.MediaColumns.RELATIVE_PATH,
+                            Environment.DIRECTORY_PICTURES + "/AppRecovery"
+                        )
+                    }
+                }
+
+                val destUri = resolver.insert(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    values
+                )
+
+                destUri?.let {
+                    resolver.openOutputStream(it)?.use { out ->
+                        resolver.openInputStream(uri)?.use { input ->
+                            input.copyTo(out)
+                        }
+                    }
+                }
+            }
+
+            runOnUiThread {
+                Toast.makeText(
+                    this,
+                    "Imágenes guardadas en Pictures/AppRecovery",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }.start()
+    }
+
+    /* ====================== SHARE ====================== */
     private fun shareSelected() {
         if (selectedUris.isEmpty()) return
-        val intent = Intent().apply {
-            action = Intent.ACTION_SEND_MULTIPLE
+
+        val intent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
             type = "image/*"
             putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(selectedUris))
         }
@@ -169,9 +185,9 @@ class WhatsAppScanActivity : AppCompatActivity() {
 
     class GridSpacingItemDecoration(
         private val spanCount: Int,
-        private val spacing: Int,
-        private val includeEdge: Boolean
+        private val spacing: Int
     ) : RecyclerView.ItemDecoration() {
+
         override fun getItemOffsets(
             outRect: android.graphics.Rect,
             view: View,
@@ -180,16 +196,16 @@ class WhatsAppScanActivity : AppCompatActivity() {
         ) {
             val position = parent.getChildAdapterPosition(view)
             val column = position % spanCount
-            if (includeEdge) {
-                outRect.left = spacing - column * spacing / spanCount
-                outRect.right = (column + 1) * spacing / spanCount
-                if (position < spanCount) outRect.top = spacing
-                outRect.bottom = spacing
-            } else {
-                outRect.left = column * spacing / spanCount
-                outRect.right = spacing - (column + 1) * spacing / spanCount
-                if (position >= spanCount) outRect.top = spacing
+
+            outRect.left = spacing - column * spacing / spanCount
+            outRect.right = (column + 1) * spacing / spanCount
+            outRect.bottom = spacing
+
+            if (position < spanCount) {
+                outRect.top = spacing
             }
         }
     }
+
+
 }

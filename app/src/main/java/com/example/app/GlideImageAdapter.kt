@@ -11,12 +11,12 @@ import com.bumptech.glide.Glide
 
 class GlideImageAdapter(
     private val images: List<Uri>,
-    private val onSelectionChanged: (selectedCount: Int, selectedUris: List<Uri>) -> Unit
+    private val onSelectionChanged: (Int, List<Uri>) -> Unit
 ) : RecyclerView.Adapter<GlideImageAdapter.ImageViewHolder>() {
 
-    private val selectedUris = mutableListOf<Uri>()
+    private val selectedPositions = linkedMapOf<Int, Uri>()
 
-    inner class ImageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class ImageViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val imageView: ImageView = view.findViewById(R.id.ivItem)
         val tvNumber: TextView = view.findViewById(R.id.tvNumber)
     }
@@ -35,21 +35,74 @@ class GlideImageAdapter(
             .centerCrop()
             .into(holder.imageView)
 
-        // Mostrar número si está seleccionado
-        val index = selectedUris.indexOf(uri)
-        holder.tvNumber.visibility = if (index >= 0) View.VISIBLE else View.GONE
-        holder.tvNumber.text = (index + 1).toString()
+        bindSelectionState(holder, position)
 
-        holder.imageView.setOnClickListener {
-            if (selectedUris.contains(uri)) {
-                selectedUris.remove(uri)
-            } else {
-                selectedUris.add(uri)
-            }
-            notifyDataSetChanged()
-            onSelectionChanged(selectedUris.size, selectedUris)
+        holder.itemView.setOnClickListener {
+            toggleSelection(position, uri)
+        }
+
+        holder.itemView.setOnLongClickListener {
+            showPreview(holder.itemView.context, uri)
+            true
         }
     }
 
     override fun getItemCount(): Int = images.size
-}
+
+    // ===================== SELECCIÓN ===================== //
+    private fun toggleSelection(position: Int, uri: Uri) {
+        if (selectedPositions.containsKey(position)) {
+            selectedPositions.remove(position)
+        } else {
+            selectedPositions[position] = uri
+        }
+
+        notifyItemChanged(position)
+        updateSelectionNumbers()
+
+        onSelectionChanged(
+            selectedPositions.size,
+            selectedPositions.values.toList()
+        )
+    }
+
+    private fun updateSelectionNumbers() {
+        selectedPositions.keys.forEach {
+            notifyItemChanged(it)
+        }
+    }
+
+    private fun bindSelectionState(holder: ImageViewHolder, position: Int) {
+        if (selectedPositions.containsKey(position)) {
+
+            val selectionIndex = selectedPositions.keys.indexOf(position) + 1
+
+            holder.tvNumber.visibility = View.VISIBLE
+            holder.tvNumber.text = holder.itemView.context.getString(
+                R.string.selection_number,
+                selectionIndex
+            )
+
+            holder.imageView.alpha = 0.6f
+        } else {
+            holder.tvNumber.visibility = View.GONE
+            holder.imageView.alpha = 1f
+        }
+    }
+
+    // ===================== PREVIEW ===================== //
+    private fun showPreview(context: android.content.Context, uri: Uri) {
+        val dialog = android.app.Dialog(
+            context,
+            android.R.style.Theme_Black_NoTitleBar_Fullscreen
+        )
+        dialog.setContentView(R.layout.dialog_image_preview)
+
+        val imageView = dialog.findViewById<ImageView>(R.id.ivPreview)
+        Glide.with(context).load(uri).into(imageView)
+
+        imageView.setOnClickListener { dialog.dismiss() }
+        dialog.show()
+    }
+
+}//end
