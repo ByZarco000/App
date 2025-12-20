@@ -25,4 +25,4 @@ class ImageAdapter(private val images: List<Uri>) :
     }
 
     override fun getItemCount(): Int = images.size
-}
+}//end

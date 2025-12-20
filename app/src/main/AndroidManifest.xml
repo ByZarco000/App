@@ -30,7 +30,7 @@
         </activity>
 
         <activity
-            android:name=".WhatsAppPermissionActivity"
+            android:name=".PermissionActivity"
             android:exported="false" />
 
         <activity

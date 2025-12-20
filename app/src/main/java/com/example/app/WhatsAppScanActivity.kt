@@ -1,10 +1,12 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.app
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Intent
 import android.net.Uri
 import android.os.AsyncTask
-import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -14,11 +16,16 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 class WhatsAppScanActivity : AppCompatActivity() {
+
+    companion object {
+        private const val DEBUG_LIMIT_IMAGES = 100
+    }
 
     private lateinit var progressBar: ProgressBar
     private lateinit var tvResult: TextView
@@ -30,6 +37,7 @@ class WhatsAppScanActivity : AppCompatActivity() {
     private val selectedUris = mutableListOf<Uri>()
     private lateinit var adapter: GlideImageAdapter
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_whatsapp_scan)
@@ -42,16 +50,18 @@ class WhatsAppScanActivity : AppCompatActivity() {
         btnShare = findViewById(R.id.btnShare)
 
         progressBar.max = 100
-        progressBar.progress = 0
         progressBar.visibility = View.VISIBLE
 
         tvResult.text = "Escaneando WhatsApp..."
         tvResult.visibility = View.VISIBLE
 
+        // ====================== GRID ======================
         rvImages.layoutManager = GridLayoutManager(this, 3)
         rvImages.addItemDecoration(GridSpacingItemDecoration(3, 16))
         rvImages.visibility = View.GONE
+        rvImages.clipToPadding = false
 
+        // ====================== BOTONES ======================
         btnDownload.setOnClickListener { downloadSelected() }
         btnShare.setOnClickListener { shareSelected() }
 
@@ -59,6 +69,7 @@ class WhatsAppScanActivity : AppCompatActivity() {
     }
 
     /* ====================== SCAN ====================== */
+    @SuppressLint("StaticFieldLeak")
     inner class ScanTask : AsyncTask<Void, Int, List<Uri>>() {
 
         private val images = mutableListOf<Uri>()
@@ -70,22 +81,32 @@ class WhatsAppScanActivity : AppCompatActivity() {
             val uriString = getSharedPreferences("permissions", MODE_PRIVATE)
                 .getString("whatsapp_uri", null) ?: return emptyList()
 
-            val root = DocumentFile.fromTreeUri(this@WhatsAppScanActivity, Uri.parse(uriString))
-                ?: return emptyList()
+            val root = DocumentFile.fromTreeUri(
+                this@WhatsAppScanActivity,
+                uriString.toUri()
+            ) ?: return emptyList()
 
-            totalFiles = countFiles(root)
-            if (totalFiles == 0) return emptyList()
+            // 👉 Si no hay límite, contamos archivos reales
+            totalFiles = if (DEBUG_LIMIT_IMAGES == 0) {
+                countFiles(root)
+            } else {
+                DEBUG_LIMIT_IMAGES
+            }
+
+            if (totalFiles == 0) totalFiles = 1
 
             scanRecursive(root)
             return images
         }
 
+        @SuppressLint("SetTextI18n")
         override fun onProgressUpdate(vararg values: Int?) {
             val progress = values[0] ?: 0
-            progressBar.progress = progress
-            tvResult.text = "Escaneando WhatsApp... $progress%"
+            progressBar.progress = progress.coerceIn(0, 100)
+            tvResult.text = "Escaneando WhatsApp... ${progress.coerceIn(0, 100)}%"
         }
 
+        @SuppressLint("SetTextI18n")
         override fun onPostExecute(result: List<Uri>) {
             progressBar.visibility = View.GONE
 
@@ -100,7 +121,8 @@ class WhatsAppScanActivity : AppCompatActivity() {
             adapter = GlideImageAdapter(result) { count, uris ->
                 selectedUris.clear()
                 selectedUris.addAll(uris)
-                buttonsLayout.visibility = if (count > 0) View.VISIBLE else View.GONE
+                buttonsLayout.visibility =
+                    if (count > 0) View.VISIBLE else View.GONE
             }
 
             rvImages.adapter = adapter
@@ -116,13 +138,18 @@ class WhatsAppScanActivity : AppCompatActivity() {
 
         private fun scanRecursive(folder: DocumentFile) {
             folder.listFiles().forEach { file ->
+
+                if (DEBUG_LIMIT_IMAGES != 0 && images.size >= DEBUG_LIMIT_IMAGES) return
+
                 if (file.isDirectory) {
                     scanRecursive(file)
                 } else if (file.type?.startsWith("image/") == true) {
                     images.add(file.uri)
                 }
+
                 scanned++
-                publishProgress((scanned * 100f / totalFiles).toInt())
+                val progress = (scanned * 100f / totalFiles).toInt()
+                publishProgress(progress)
             }
         }
     }
@@ -140,12 +167,10 @@ class WhatsAppScanActivity : AppCompatActivity() {
                 val values = ContentValues().apply {
                     put(MediaStore.MediaColumns.DISPLAY_NAME, name)
                     put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        put(
-                            MediaStore.MediaColumns.RELATIVE_PATH,
-                            Environment.DIRECTORY_PICTURES + "/AppRecovery"
-                        )
-                    }
+                    put(
+                        MediaStore.MediaColumns.RELATIVE_PATH,
+                        Environment.DIRECTORY_PICTURES + "/AppRecovery"
+                    )
                 }
 
                 val destUri = resolver.insert(
@@ -183,6 +208,7 @@ class WhatsAppScanActivity : AppCompatActivity() {
         startActivity(Intent.createChooser(intent, "Compartir imágenes"))
     }
 
+    /* ====================== GRID SPACING ====================== */
     class GridSpacingItemDecoration(
         private val spanCount: Int,
         private val spacing: Int
@@ -206,6 +232,4 @@ class WhatsAppScanActivity : AppCompatActivity() {
             }
         }
     }
-
-
 }

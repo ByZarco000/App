@@ -8,7 +8,7 @@ import androidx.core.net.toUri
 import androidx.core.content.edit
 
 @Suppress("DEPRECATION")
-class WhatsAppPermissionActivity : AppCompatActivity() {
+class PermissionActivity : AppCompatActivity() {
 
     companion object {
         private const val REQUEST_CODE_WHATSAPP = 1001
@@ -74,4 +74,4 @@ class WhatsAppPermissionActivity : AppCompatActivity() {
             finish()
         }
     }
-}
+}//end

@@ -28,12 +28,11 @@ class MainActivity : AppCompatActivity() {
         val cbInstagram = dialogView.findViewById<CheckBox>(R.id.cbInstagram)
 
         AlertDialog.Builder(this)
-            .setTitle("Selecciona apps a escanear")
             .setView(dialogView)
             .setPositiveButton("Continuar") { _, _ ->
 
                 if (cbWhatsapp.isChecked) {
-                    val intent = Intent(this, WhatsAppPermissionActivity::class.java)
+                    val intent = Intent(this, PermissionActivity::class.java)
                     startActivity(intent)
                 }
                 else {
