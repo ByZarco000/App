@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -20,13 +21,14 @@
         android:id="@+id/tvAppName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="App Recovery"
+        android:layout_marginStart="16dp"
+        android:text="Recuperación de Archivos – All Recovery"
         android:textColor="#FFFFFF"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:layout_marginStart="16dp"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/guidelineTop"
-        app:layout_constraintStart_toStartOf="parent"/>
+        tools:ignore="HardcodedText" />
 
     <!-- Tarjeta azul principal -->
     <androidx.cardview.widget.CardView
@@ -61,15 +63,17 @@
                     android:text="Recuperación\nde fotos eliminadas"
                     android:textColor="#FFFFFF"
                     android:textSize="18sp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold"
+                    tools:ignore="HardcodedText" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:text="Recuperación rápida con un clic"
-                    android:textColor="#E0E0E0"
+                    android:textColor="#EFEBE9"
                     android:textSize="14sp"
-                    android:layout_marginTop="8dp"/>
+                    tools:ignore="HardcodedText" />
             </LinearLayout>
 
             <!-- Imagen papelera -->
@@ -78,7 +82,8 @@
                 android:layout_height="90dp"
                 android:src="@drawable/ic_trash"
                 android:contentDescription="Papelera"
-                android:alpha="0.85"/>
+                android:alpha="0.85"
+                tools:ignore="HardcodedText" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
@@ -102,7 +107,8 @@
             android:text="▶  Recuperación de videos"
             android:textColor="#FFFFFF"
             android:textSize="16sp"
-            android:background="#1C1F26"/>
+            android:background="#1C1F26"
+            tools:ignore="HardcodedText,RtlSymmetry" />
     </androidx.cardview.widget.CardView>
 
     <!-- Botón audios -->
@@ -125,7 +131,8 @@
             android:text="🎵  Recuperación de audios"
             android:textColor="#FFFFFF"
             android:textSize="16sp"
-            android:background="#1C1F26"/>
+            android:background="#1C1F26"
+            tools:ignore="HardcodedText,RtlSymmetry" />
     </androidx.cardview.widget.CardView>
 
     <!-- Cuadrícula inferior -->
@@ -153,7 +160,8 @@
                 android:text="Duplicados"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp"
-                android:background="#1C1F26"/>
+                android:background="#1C1F26"
+                tools:ignore="HardcodedText" />
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
@@ -170,7 +178,8 @@
                 android:text="Recuperado"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp"
-                android:background="#1C1F26"/>
+                android:background="#1C1F26"
+                tools:ignore="HardcodedText" />
         </androidx.cardview.widget.CardView>
 
     </LinearLayout>

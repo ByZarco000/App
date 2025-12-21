@@ -2,6 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -11,11 +12,12 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
         android:text="Selecciona apps a escanear"
+        android:textColor="#FFFFFF"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:textColor="#FFFFFF"
-        android:layout_marginBottom="12dp" />
+        tools:ignore="HardcodedText,TextContrastCheck" />
 
     <!-- WHATSAPP -->
     <com.google.android.material.card.MaterialCardView
@@ -36,7 +38,8 @@
                 android:id="@+id/iconWhatsapp"
                 android:layout_width="39dp"
                 android:layout_height="46dp"
-                android:src="@drawable/ic_whatsapp" />
+                android:src="@drawable/ic_whatsapp"
+                tools:ignore="ContentDescription,ImageContrastCheck" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -47,7 +50,8 @@
                 android:text="WhatsApp"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                tools:ignore="HardcodedText,TextContrastCheck" />
 
             <CheckBox
                 android:id="@+id/cbWhatsapp"
@@ -79,7 +83,8 @@
                 android:layout_width="39dp"
                 android:layout_height="46dp"
                 android:src="@drawable/ic_telegram"
-                app:tint="#AAAAAA" />
+                app:tint="#AAAAAA"
+                tools:ignore="ContentDescription,ImageContrastCheck" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -88,16 +93,18 @@
                 android:layout_marginTop="10dp"
                 android:layout_toEndOf="@id/iconTelegram"
                 android:text="Telegram"
-                android:textSize="16sp"
                 android:textColor="#AAAAAA"
-                android:textStyle="bold" />
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:ignore="HardcodedText,TextContrastCheck" />
 
             <CheckBox
                 android:id="@+id/cbTelegram"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:enabled="false" />
+                android:enabled="false"
+                tools:ignore="DuplicateSpeakableTextCheck" />
         </RelativeLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -121,7 +128,8 @@
                 android:layout_width="39dp"
                 android:layout_height="46dp"
                 android:src="@drawable/ic_instagram"
-                app:tint="#AAAAAA" />
+                app:tint="#AAAAAA"
+                tools:ignore="ContentDescription,ImageContrastCheck" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -130,9 +138,10 @@
                 android:layout_marginTop="10dp"
                 android:layout_toEndOf="@id/iconInstagram"
                 android:text="Instagram"
-                android:textSize="16sp"
                 android:textColor="#AAAAAA"
-                android:textStyle="bold" />
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:ignore="HardcodedText,TextContrastCheck" />
 
             <CheckBox
                 android:id="@+id/cbInstagram"

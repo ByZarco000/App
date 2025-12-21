@@ -47,4 +47,5 @@ dependencies {
     kapt("com.github.bumptech.glide:compiler:4.16.0")
 
     testImplementation(libs.junit)
+    testImplementation(kotlin("test"))
 }

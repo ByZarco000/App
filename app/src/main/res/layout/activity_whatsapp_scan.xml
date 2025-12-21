@@ -3,6 +3,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#0F1115"
@@ -35,7 +36,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="16dp"
+        tools:ignore="HardcodedText" />
 
     <!-- Grid de imágenes -->
     <androidx.recyclerview.widget.RecyclerView
@@ -67,9 +69,11 @@
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:background="@drawable/circle_background"
+            android:contentDescription="TODO"
             android:padding="12dp"
             android:src="@drawable/ic_download"
-            app:tint="#FFFFFF" />
+            app:tint="#FFFFFF"
+            tools:ignore="ContentDescription,HardcodedText" />
 
         <ImageButton
             android:id="@+id/btnShare"
@@ -79,7 +83,8 @@
             android:background="@drawable/circle_background"
             android:padding="12dp"
             android:src="@drawable/ic_share"
-            app:tint="#FFFFFF" />
+            app:tint="#FFFFFF"
+            tools:ignore="ContentDescription" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

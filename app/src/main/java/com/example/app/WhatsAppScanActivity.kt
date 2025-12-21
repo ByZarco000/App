@@ -76,6 +76,7 @@ class WhatsAppScanActivity : AppCompatActivity() {
         private var totalFiles = 0
         private var scanned = 0
 
+        @Deprecated("Deprecated in Java")
         override fun doInBackground(vararg params: Void?): List<Uri> {
 
             val uriString = getSharedPreferences("permissions", MODE_PRIVATE)
@@ -86,7 +87,6 @@ class WhatsAppScanActivity : AppCompatActivity() {
                 uriString.toUri()
             ) ?: return emptyList()
 
-            // 👉 Si no hay límite, contamos archivos reales
             totalFiles = if (DEBUG_LIMIT_IMAGES == 0) {
                 countFiles(root)
             } else {
@@ -99,6 +99,7 @@ class WhatsAppScanActivity : AppCompatActivity() {
             return images
         }
 
+        @Deprecated("Deprecated in Java")
         @SuppressLint("SetTextI18n")
         override fun onProgressUpdate(vararg values: Int?) {
             val progress = values[0] ?: 0
@@ -106,6 +107,7 @@ class WhatsAppScanActivity : AppCompatActivity() {
             tvResult.text = "Escaneando WhatsApp... ${progress.coerceIn(0, 100)}%"
         }
 
+        @Deprecated("Deprecated in Java")
         @SuppressLint("SetTextI18n")
         override fun onPostExecute(result: List<Uri>) {
             progressBar.visibility = View.GONE
