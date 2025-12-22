@@ -61,11 +61,37 @@ class WhatsAppScanActivity : AppCompatActivity() {
         rvImages.visibility = View.GONE
         rvImages.clipToPadding = false
 
-        // ====================== BOTONES ======================
-        btnDownload.setOnClickListener { downloadSelected() }
-        btnShare.setOnClickListener { shareSelected() }
+        // ====================== BOTONES (CON ANIMACIÓN) ======================
+        btnDownload.setOnClickListener {
+            animatePress(btnDownload) {
+                downloadSelected()
+            }
+        }
+
+        btnShare.setOnClickListener {
+            animatePress(btnShare) {
+                shareSelected()
+            }
+        }
 
         ScanTask().execute()
+    }
+
+    /* ====================== ANIMACIÓN PULSADO ====================== */
+    private fun animatePress(view: View, action: () -> Unit) {
+        view.animate()
+            .scaleX(0.9f)
+            .scaleY(0.9f)
+            .setDuration(80)
+            .withEndAction {
+                view.animate()
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setDuration(80)
+                    .withEndAction { action() }
+                    .start()
+            }
+            .start()
     }
 
     /* ====================== SCAN ====================== */
@@ -76,7 +102,6 @@ class WhatsAppScanActivity : AppCompatActivity() {
         private var totalFiles = 0
         private var scanned = 0
 
-        @Deprecated("Deprecated in Java")
         override fun doInBackground(vararg params: Void?): List<Uri> {
 
             val uriString = getSharedPreferences("permissions", MODE_PRIVATE)
@@ -99,16 +124,12 @@ class WhatsAppScanActivity : AppCompatActivity() {
             return images
         }
 
-        @Deprecated("Deprecated in Java")
-        @SuppressLint("SetTextI18n")
         override fun onProgressUpdate(vararg values: Int?) {
             val progress = values[0] ?: 0
             progressBar.progress = progress.coerceIn(0, 100)
             tvResult.text = "Escaneando WhatsApp... ${progress.coerceIn(0, 100)}%"
         }
 
-        @Deprecated("Deprecated in Java")
-        @SuppressLint("SetTextI18n")
         override fun onPostExecute(result: List<Uri>) {
             progressBar.visibility = View.GONE
 
