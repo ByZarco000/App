@@ -70,7 +70,7 @@ class PermissionActivity : AppCompatActivity() {
                     putString("whatsapp_uri", uri.toString())
                 }
 
-            startActivity(Intent(this, WhatsAppScanActivity::class.java))
+            startActivity(Intent(this, ScanActivity::class.java))
             finish()
         }
     }

@@ -21,7 +21,7 @@ import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class WhatsAppScanActivity : AppCompatActivity() {
+class ScanActivity : AppCompatActivity() {
 
     companion object {
         private const val DEBUG_LIMIT_IMAGES = 100
@@ -40,7 +40,7 @@ class WhatsAppScanActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_whatsapp_scan)
+        setContentView(R.layout.activity_general_scan)
 
         progressBar = findViewById(R.id.progressBar)
         tvResult = findViewById(R.id.tvResult)
@@ -108,7 +108,7 @@ class WhatsAppScanActivity : AppCompatActivity() {
                 .getString("whatsapp_uri", null) ?: return emptyList()
 
             val root = DocumentFile.fromTreeUri(
-                this@WhatsAppScanActivity,
+                this@ScanActivity,
                 uriString.toUri()
             ) ?: return emptyList()
 

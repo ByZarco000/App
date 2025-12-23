@@ -34,7 +34,7 @@
             android:exported="false" />
 
         <activity
-            android:name=".WhatsAppScanActivity"
+            android:name=".ScanActivity"
             android:exported="false" />
 
     </application>

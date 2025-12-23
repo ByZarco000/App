@@ -51,15 +51,15 @@
 
             <!-- ICONO DECORATIVO ARRIBA IZQUIERDA -->
             <ImageView
-                android:layout_width="140dp"
-                android:layout_height="140dp"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
                 android:layout_gravity="start|top"
-                android:layout_marginStart="-20dp"
-                android:layout_marginTop="-20dp"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="-10dp"
                 android:alpha="0.12"
-                android:src="@drawable/ic_trash"
-                tools:srcCompat="@drawable/ic_image_search"
-                tools:ignore="ContentDescription,VisualLintBounds" />
+                android:src="@drawable/ic_image_search"
+                tools:ignore="ContentDescription,VisualLintBounds"
+                tools:srcCompat="@drawable/ic_image_search" />
 
             <!-- CONTENIDO -->
             <LinearLayout

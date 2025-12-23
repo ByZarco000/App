@@ -19,7 +19,48 @@
         android:textStyle="bold"
         tools:ignore="HardcodedText,TextContrastCheck" />
 
-    <!-- WHATSAPP -->
+    <!-- 📸 CÁMARA -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:strokeWidth="2dp"
+        app:strokeColor="#4FC3F7">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/iconCamera"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_camara"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/iconCamera"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:text="Cámara"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <CheckBox
+                android:id="@+id/cbCamera"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true" />
+        </RelativeLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- 💬 WHATSAPP -->
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -31,38 +72,36 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:padding="16dp">
 
             <ImageView
                 android:id="@+id/iconWhatsapp"
-                android:layout_width="39dp"
-                android:layout_height="46dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:src="@drawable/ic_whatsapp"
-                tools:ignore="ContentDescription,ImageContrastCheck" />
+                tools:ignore="ContentDescription" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/iconWhatsapp"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
-                android:layout_toEndOf="@id/iconWhatsapp"
                 android:text="WhatsApp"
                 android:textColor="#FFFFFF"
                 android:textSize="16sp"
-                android:textStyle="bold"
-                tools:ignore="HardcodedText,TextContrastCheck" />
+                android:textStyle="bold" />
 
             <CheckBox
                 android:id="@+id/cbWhatsapp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:checked="true" />
+                android:layout_alignParentEnd="true" />
         </RelativeLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- TELEGRAM -->
+    <!-- ✈️ TELEGRAM (deshabilitado) -->
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -75,40 +114,38 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:padding="16dp">
 
             <ImageView
                 android:id="@+id/iconTelegram"
-                android:layout_width="39dp"
-                android:layout_height="46dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:src="@drawable/ic_telegram"
                 app:tint="#AAAAAA"
-                tools:ignore="ContentDescription,ImageContrastCheck" />
+                tools:ignore="ContentDescription" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/iconTelegram"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
-                android:layout_toEndOf="@id/iconTelegram"
                 android:text="Telegram"
                 android:textColor="#AAAAAA"
                 android:textSize="16sp"
-                android:textStyle="bold"
-                tools:ignore="HardcodedText,TextContrastCheck" />
+                android:textStyle="bold" />
 
             <CheckBox
                 android:id="@+id/cbTelegram"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:enabled="false"
-                tools:ignore="DuplicateSpeakableTextCheck" />
+                android:enabled="false" />
         </RelativeLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- INSTAGRAM -->
+    <!-- 📷 INSTAGRAM (deshabilitado) -->
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -120,28 +157,27 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:padding="16dp">
 
             <ImageView
                 android:id="@+id/iconInstagram"
-                android:layout_width="39dp"
-                android:layout_height="46dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:src="@drawable/ic_instagram"
                 app:tint="#AAAAAA"
-                tools:ignore="ContentDescription,ImageContrastCheck" />
+                tools:ignore="ContentDescription" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/iconInstagram"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
-                android:layout_toEndOf="@id/iconInstagram"
                 android:text="Instagram"
                 android:textColor="#AAAAAA"
                 android:textSize="16sp"
-                android:textStyle="bold"
-                tools:ignore="HardcodedText,TextContrastCheck" />
+                android:textStyle="bold" />
 
             <CheckBox
                 android:id="@+id/cbInstagram"
